@@ -27,8 +27,17 @@ app.get("/poll", function (req, res) {
 });
 
 app.post("/poll", function (req, res) {
-  // add a new message to the server
-  // write code here
+  const { user, text } = req.body;
+
+  msg.push({
+    user,
+    text,
+    time: Date.now()
+  });
+
+  res.json({
+    status: 'ok'
+  })
 });
 
 // start the server
