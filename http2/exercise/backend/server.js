@@ -18,7 +18,6 @@ msg.push({
 
 // the two commands you'll have to run in the root directory of the project are
 // (not inside the backend folder)
-//
 // openssl req -new -newkey rsa:2048 -new -nodes -keyout key.pem -out csr.pem
 // openssl x509 -req -days 365 -in csr.pem -signkey key.pem -out server.crt
 //
