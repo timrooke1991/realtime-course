@@ -3,7 +3,7 @@ const msgs = document.getElementById("msgs");
 const presence = document.getElementById("presence-indicator");
 
 // this will hold all the most recent messages
-let allChat = [];
+allChat = [];
 
 chat.addEventListener("submit", function (e) {
   e.preventDefault();
@@ -32,14 +32,50 @@ async function postNewMsg(user, text) {
 }
 
 async function getNewMsgs() {
-  /*
-   *
-   * code goes here
-   *
-   */
+  let reader;
+  const utf8Decoder = new TextDecoder('utf-8');
+
+  try {
+    const res = await fetch('/msgs');
+    reader = res.body.getReader();
+
+  } catch (e) {
+    console.log('connection error ', e);
+  }
+
+  let done;
+  presence.innerText = '🟢';
+  do {
+    let readerResponse;
+    try {
+      readerResponse = await reader.read();
+    } catch (e) {
+      presence.innerText = '🔴';
+      console.error(e);
+      return;
+    }
+
+    done = readerResponse.done;
+    const chunk = utf8Decoder.decode(readerResponse.value, { stream: true });
+    console.log(chunk);
+
+    if (chunk) {
+      try {
+        const json = JSON.parse(chunk);
+        console.log(json);
+        allChat = json.msg;
+        render();
+      } catch (e) {
+        console.error('parse error', e);
+      }
+    }
+  } while (!done);
+
+   presence.innerText = '🔴';
 }
 
 function render() {
+  console.log(allChat);
   const html = allChat.map(({ user, text, time, id }) =>
     template(user, text, time, id)
   );
